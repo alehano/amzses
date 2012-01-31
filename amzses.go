@@ -21,7 +21,7 @@ const (
 var accessKey, secretKey string
 
 func init() {
-	config := jconfig.LoadConfig("/etc/aws.conf")
+	config := jconfig.LoadConfig("aws.conf")
 	accessKey = config.GetString("aws_access_key")
 	secretKey = config.GetString("aws_secret_key")
 }
