@@ -26,13 +26,14 @@ func init() {
 	secretKey = config.GetString("aws_secret_key")
 }
 
-func SendMail(from, to, subject, body string) (string, os.Error) {
+func SendMail(from, to, subject, text, html string) (string, os.Error) {
 	data := make(url.Values)
 	data.Add("Action", "SendEmail")
 	data.Add("Source", from)
 	data.Add("Destination.ToAddresses.member.1", to)
 	data.Add("Message.Subject.Data", subject)
-	data.Add("Message.Body.Text.Data", body)
+	data.Add("Message.Body.Text.Data", text)
+	data.Add("Message.Body.Html.Data", html)
 	data.Add("AWSAccessKeyId", accessKey)
 
 	return sesGet(data)
