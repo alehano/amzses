@@ -1,4 +1,11 @@
+// Copyright 2011 Numrotron Inc.
+// Use of this source code is governed by an MIT-style license
+// that can be found in the LICENSE file.
+//
+// Developed at www.stathat.com by Patrick Crosby
+// Contact us on twitter with any questions:  twitter.com/stat_hat
 
+// amzses is a Go package to send emails using Amazon's Simple Email Service.
 package amzses
 
 import (
@@ -31,8 +38,6 @@ func init() {
 }
 
 func SendMail(from, to, subject, text, html string) (string, os.Error) {
-	//var r AmazonResponse
-
 	data := make(url.Values)
 	data.Add("Action", "SendEmail")
 	data.Add("Source", from)
@@ -58,7 +63,6 @@ func sesGet(data url.Values) (string, os.Error) {
 	headers := map[string][]string{}
 
 	now := time.UTC()
-	// date format: "Tue, 25 May 2010 21:20:27 +0000"
 	date := now.Format("Mon, 02 Jan 2006 15:04:05 -0700")
 	headers["Date"] = []string{date}
 
@@ -80,7 +84,6 @@ func sesGet(data url.Values) (string, os.Error) {
 
 	r, err := http.DefaultClient.Do(&req)
 	if err != nil {
-		//log.Printf("http error: %s", err)
 		return "", err
 	}
 
@@ -88,9 +91,6 @@ func sesGet(data url.Values) (string, os.Error) {
 	r.Body.Close()
 
 	if r.StatusCode != 200 {
-		//log.Printf("error, status = %d", r.StatusCode)
-
-		//log.Printf("error response: %s", resultbody)
 		return "", os.NewError(string(resultbody))
 	}
 
