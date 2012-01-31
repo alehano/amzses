@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/stathat/jconfig"
 	"io/ioutil"
-	"log"
 	"http"
 	"url"
 	"time"
@@ -20,6 +19,11 @@ const (
 
 var accessKey, secretKey string
 
+type AmazonResponse struct {
+	MessageId string `xml:"SendEmailResult>MessageId>"`
+	RequestId string `xml:"ResponseMetadata>RequestId>"`
+}
+
 func init() {
 	config := jconfig.LoadConfig("aws.conf")
 	accessKey = config.GetString("aws_access_key")
@@ -27,6 +31,8 @@ func init() {
 }
 
 func SendMail(from, to, subject, text, html string) (string, os.Error) {
+	//var r AmazonResponse
+
 	data := make(url.Values)
 	data.Add("Action", "SendEmail")
 	data.Add("Source", from)
@@ -35,7 +41,6 @@ func SendMail(from, to, subject, text, html string) (string, os.Error) {
 	data.Add("Message.Body.Text.Data", text)
 	data.Add("Message.Body.Html.Data", html)
 	data.Add("AWSAccessKeyId", accessKey)
-
 	return sesGet(data)
 }
 
@@ -75,7 +80,7 @@ func sesGet(data url.Values) (string, os.Error) {
 
 	r, err := http.DefaultClient.Do(&req)
 	if err != nil {
-		log.Printf("http error: %s", err)
+		//log.Printf("http error: %s", err)
 		return "", err
 	}
 
@@ -83,9 +88,9 @@ func sesGet(data url.Values) (string, os.Error) {
 	r.Body.Close()
 
 	if r.StatusCode != 200 {
-		log.Printf("error, status = %d", r.StatusCode)
+		//log.Printf("error, status = %d", r.StatusCode)
 
-		log.Printf("error response: %s", resultbody)
+		//log.Printf("error response: %s", resultbody)
 		return "", os.NewError(string(resultbody))
 	}
 
