@@ -1,23 +1,16 @@
-// Copyright 2011 Numrotron Inc.
-// Use of this source code is governed by an MIT-style license
-// that can be found in the LICENSE file.
-//
-// Developed at www.stathat.com by Patrick Crosby
-// Contact us on twitter with any questions:  twitter.com/stat_hat
 
-// amzses is a Go package to send emails using Amazon's Simple Email Service.
 package amzses
 
 import (
+	"os"
 	"crypto/hmac"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"github.com/stathat/jconfig"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
+	"http"
+	"url"
 	"time"
 )
 
@@ -33,7 +26,7 @@ func init() {
 	secretKey = config.GetString("aws_secret_key")
 }
 
-func SendMail(from, to, subject, body string) (string, error) {
+func SendMail(from, to, subject, body string) (string, os.Error) {
 	data := make(url.Values)
 	data.Add("Action", "SendEmail")
 	data.Add("Source", from)
@@ -48,24 +41,24 @@ func SendMail(from, to, subject, body string) (string, error) {
 func authorizationHeader(date string) []string {
 	h := hmac.NewSHA256([]uint8(secretKey))
 	h.Write([]uint8(date))
-	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	signature := base64.StdEncoding.EncodeToString(h.Sum())
 	auth := fmt.Sprintf("AWS3-HTTPS AWSAccessKeyId=%s, Algorithm=HmacSHA256, Signature=%s", accessKey, signature)
 	return []string{auth}
 }
 
-func sesGet(data url.Values) (string, error) {
+func sesGet(data url.Values) (string, os.Error) {
 	urlstr := fmt.Sprintf("%s?%s", endpoint, data.Encode())
 	endpointURL, _ := url.Parse(urlstr)
 	headers := map[string][]string{}
 
-	now := time.Now().UTC()
+	now := time.UTC()
 	// date format: "Tue, 25 May 2010 21:20:27 +0000"
 	date := now.Format("Mon, 02 Jan 2006 15:04:05 -0700")
 	headers["Date"] = []string{date}
 
 	h := hmac.NewSHA256([]uint8(secretKey))
 	h.Write([]uint8(date))
-	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	signature := base64.StdEncoding.EncodeToString(h.Sum())
 	auth := fmt.Sprintf("AWS3-HTTPS AWSAccessKeyId=%s, Algorithm=HmacSHA256, Signature=%s", accessKey, signature)
 	headers["X-Amzn-Authorization"] = []string{auth}
 
@@ -77,6 +70,7 @@ func sesGet(data url.Values) (string, error) {
 		Close:      true,
 		Header:     headers,
 	}
+
 
 	r, err := http.DefaultClient.Do(&req)
 	if err != nil {
@@ -91,7 +85,7 @@ func sesGet(data url.Values) (string, error) {
 		log.Printf("error, status = %d", r.StatusCode)
 
 		log.Printf("error response: %s", resultbody)
-		return "", errors.New(string(resultbody))
+		return "", os.NewError(string(resultbody))
 	}
 
 	return string(resultbody), nil
