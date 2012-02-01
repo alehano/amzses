@@ -50,35 +50,35 @@ func SendMail(from, to, subject, text, html string) (string, os.Error) {
 }
 
 func VerifyEmail(email string) (string, os.Error) {
-    data := make(url.Values)
-    data.Add("Action", "VerifyEmailAddress")
-    data.Add("EmailAddress", email)
-    return sesGet(data)
+	data := make(url.Values)
+	data.Add("Action", "VerifyEmailAddress")
+	data.Add("EmailAddress", email)
+	return sesGet(data)
 }
 
-func DeleteEmail(email string) (string, os.Error){
-    data := make(url.Values)
-    data.Add("Action", "DeleteVerifiedEmailAddress")
-    data.Add("EmailAddress", email)
-    return sesGet(data)
+func DeleteEmail(email string) (string, os.Error) {
+	data := make(url.Values)
+	data.Add("Action", "DeleteVerifiedEmailAddress")
+	data.Add("EmailAddress", email)
+	return sesGet(data)
 }
 
-func GetSendQuota() (string, os.Error){
-    data := make(url.Values)
-    data.Add("Action", "GetSendQuota")
-    return sesGet(data)
+func GetSendQuota() (string, os.Error) {
+	data := make(url.Values)
+	data.Add("Action", "GetSendQuota")
+	return sesGet(data)
 }
 
-func GetSendStatistics() (string, os.Error){
-    data := make(url.Values)
-    data.Add("Action", "GetSendStatistics")
-    return sesGet(data)
+func GetSendStatistics() (string, os.Error) {
+	data := make(url.Values)
+	data.Add("Action", "GetSendStatistics")
+	return sesGet(data)
 }
 
-func ListVerifiedEmail() (string, os.Error){
-    data := make(url.Values)
-    data.Add("Action", "ListVerifiedEmailAddresses")
-    return sesGet(data)
+func ListVerifiedEmail() (string, os.Error) {
+	data := make(url.Values)
+	data.Add("Action", "ListVerifiedEmailAddresses")
+	return sesGet(data)
 }
 
 func authorizationHeader(date string) []string {
@@ -114,7 +114,6 @@ func sesGet(data url.Values) (string, os.Error) {
 		Header:     headers,
 	}
 
-
 	r, err := http.DefaultClient.Do(&req)
 	if err != nil {
 		return "", err
@@ -129,4 +128,3 @@ func sesGet(data url.Values) (string, os.Error) {
 
 	return string(resultbody), nil
 }
-
