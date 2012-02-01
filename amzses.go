@@ -45,8 +45,40 @@ func SendMail(from, to, subject, text, html string) (string, os.Error) {
 	data.Add("Message.Subject.Data", subject)
 	data.Add("Message.Body.Text.Data", text)
 	data.Add("Message.Body.Html.Data", html)
-	data.Add("AWSAccessKeyId", accessKey)
 	return sesGet(data)
+}
+
+func VerifyEmail(email string) (string, os.Error) {
+    data := make(url.Values)
+    data.Add("Action", "VerifyEmailAddress")
+    data.Add("EmailAddress", email)
+    return sesGet(data)
+}
+
+func DeleteEmail(email string) (string, os.Error){
+    data := make(url.Values)
+    data.Add("Action", "DeleteVerifiedEmailAddress")
+    data.Add("EmailAddress", email)
+    return sesGet(data)
+}
+
+func GetSendQuota() (string, os.Error){
+    data := make(url.Values)
+    data.Add("Action", "GetSendQuota")
+    return sesGet(data)
+}
+
+func GetSendStatistics() (string, os.Error){
+    data := make(url.Values)
+    data.Add("Action", "GetSendStatistics")
+    return sesGet(data)
+}
+
+
+func ListVerifiedEmail() (string, os.Error){
+    data := make(url.Values)
+    data.Add("Action", "ListVerifiedEmailAddresses")
+    return sesGet(data)
 }
 
 func authorizationHeader(date string) []string {
@@ -58,6 +90,7 @@ func authorizationHeader(date string) []string {
 }
 
 func sesGet(data url.Values) (string, os.Error) {
+	data.Add("AWSAccessKeyId", accessKey)
 	urlstr := fmt.Sprintf("%s?%s", endpoint, data.Encode())
 	endpointURL, _ := url.Parse(urlstr)
 	headers := map[string][]string{}
