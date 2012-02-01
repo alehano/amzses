@@ -6,6 +6,7 @@
 // Contact us on twitter with any questions:  twitter.com/stat_hat
 
 // amzses is a Go package to send emails using Amazon's Simple Email Service.
+
 package amzses
 
 import (
@@ -74,7 +75,6 @@ func GetSendStatistics() (string, os.Error){
     return sesGet(data)
 }
 
-
 func ListVerifiedEmail() (string, os.Error){
     data := make(url.Values)
     data.Add("Action", "ListVerifiedEmailAddresses")
@@ -129,3 +129,4 @@ func sesGet(data url.Values) (string, os.Error) {
 
 	return string(resultbody), nil
 }
+
